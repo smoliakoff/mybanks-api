@@ -1,10 +1,17 @@
-.PHONY: generate enrich openapi genroutes
+SCHEMA_URL ?= http://localhost:8080/schema.graphql
+SCHEMA_OUT ?= ./graph/schema.graphqls
+
+.PHONY: generate schema
 
 generate:
-	@echo "🔧 Generating Ent client + OpenAPI JSON spec..."
+	@echo "🔧 Generating Ent client + Graphql files..."
 	go generate ./...
 	go generate ./ent
 	go run github.com/99designs/gqlgen generate
+
+schema: generate ## Pull GraphQL schema from running server
+	curl -s $(SCHEMA_URL) -o $(SCHEMA_OUT)
+	@echo "✅ saved to $(SCHEMA_OUT)"
 
 enrich: generate
 	@echo "➕ Injecting metadata into openapi.json..."

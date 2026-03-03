@@ -6,12 +6,15 @@ services:
     environment:
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
-      POSTGRES_DB: postgres
+      POSTGRES_DB: mybanks
     ports:
       - "5432:5432"
 
   api:
-    build: .
+    build:
+      context: .
+      args:
+        BUILD_SHA: ${BUILD_SHA:-dev}
     depends_on:
       - db
     environment:

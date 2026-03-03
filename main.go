@@ -10,6 +10,7 @@ import (
 	"github.com/vektah/gqlparser/v2/formatter"
 	"log"
 	"mybanks-api/ent"
+
 	"mybanks-api/graph"
 	"mybanks-api/internal/config"
 	"net/http"
@@ -24,6 +25,8 @@ import (
 )
 
 const defaultPort = "8080"
+
+var BuildSHA = "dev"
 
 // corsMiddleware sets CORS headers to allow requests from http://localhost:3000
 func corsMiddleware(next http.Handler) http.Handler {
@@ -42,9 +45,10 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	log.Printf("BuildSHA=%s", BuildSHA)
+
 	_ = godotenv.Load(".env")
 	cfg := config.Load()
-	//dsn := "postgres://app:app@localhost:5432/postgres?sslmode=disable"
 
 	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
@@ -83,6 +87,7 @@ func main() {
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
+
 	// schema through HTTP:
 	var buf bytes.Buffer
 	f := formatter.NewFormatter(&buf)
