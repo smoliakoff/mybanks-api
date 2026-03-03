@@ -4,11 +4,14 @@ import (
 	"bytes"
 	"context"
 	"entgo.io/ent/dialect/sql"
+	"fmt"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/vektah/gqlparser/v2/formatter"
 	"log"
 	"mybanks-api/ent"
 	"mybanks-api/graph"
+	"mybanks-api/internal/config"
 	"net/http"
 	"os"
 
@@ -22,14 +25,14 @@ import (
 
 const defaultPort = "8080"
 
-// corsMiddleware устанавливает CORS-заголовки для разрешения запросов с http://localhost:3000
+// corsMiddleware sets CORS headers to allow requests from http://localhost:3000
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Установите нужный origin или "*" если хотите разрешить все домены
+		// Set the desired origin or “*” if you want to allow all domains
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		// Обрабатываем preflight-запросы
+		// Process preflight requests
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
 			return
@@ -39,14 +42,20 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	_ = godotenv.Load(".env")
+	cfg := config.Load()
+	//dsn := "postgres://app:app@localhost:5432/postgres?sslmode=disable"
 
-	dsn := "postgres://postgres:@localhost:5432/postgres?sslmode=disable"
-
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("failed connecting to postgres: %v", err)
 	}
-	defer db.Close()
+	defer func(db *sql.Driver) {
+		err := db.Close()
+		if err != nil {
+			fmt.Printf("error closing db: %v", err)
+		}
+	}(db)
 
 	client := ent.NewClient(ent.Driver(db))
 	if err := client.Schema.Create(context.Background()); err != nil {
@@ -57,7 +66,7 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-	schema := graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{client}})
+	schema := graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{Client: client}})
 
 	srv := handler.New(schema)
 
@@ -74,17 +83,21 @@ func main() {
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
-	// Добавляем отдачу схемы по HTTP:
+	// schema through HTTP:
 	var buf bytes.Buffer
 	f := formatter.NewFormatter(&buf)
 	f.FormatSchema(schema.Schema())
 
 	http.HandleFunc("/schema.graphql", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write(buf.Bytes())
+		_, err := w.Write(buf.Bytes())
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	})
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	// Оборачиваем DefaultServeMux в corsMiddleware
+	// Wrap DefaultServeMux in corsMiddleware
 	log.Fatal(http.ListenAndServe(":"+port, corsMiddleware(http.DefaultServeMux)))
 }

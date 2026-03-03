@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Bank Directory API
-  description: API для справочника банков
+  description: API for bank directory
   version: 1.0.0
 paths:
   /banks:
@@ -1073,4 +1073,4 @@ components:
               - status
 servers:
   - url: http://127.0.0.1:8080/api/v1
-    description: Локальный сервер (по умолчанию)
+    description: Local server (default)
