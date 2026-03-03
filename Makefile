@@ -4,7 +4,6 @@ generate:
 	@echo "🔧 Generating Ent client + OpenAPI JSON spec..."
 	go generate ./...
 	go generate ./ent
-	go get github.com/99designs/gqlgen@v0.17.68
 	go run github.com/99designs/gqlgen generate
 
 enrich: generate
@@ -12,12 +11,12 @@ enrich: generate
 	yq -i ' \
   .info = { \
     "title": "Bank Directory API", \
-    "description": "API для справочника банков", \
+    "description": "API for bank directory", \
     "version": "1.0.0" \
   } | \
   .servers = [{ \
     "url": "http://127.0.0.1:8080/api/v1", \
-    "description": "Локальный сервер (по умолчанию)" \
+    "description": "Local server (default)" \
   }]' ent/openapi.json
 
 	@echo "✅ openapi.json enriched"

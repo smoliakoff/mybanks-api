@@ -12,8 +12,8 @@ import (
 func main() {
 	ex, err := entgql.NewExtension(
 		entgql.WithSchemaPath("../graph/schema.graphqls"),
-		entgql.WithSchemaGenerator(), // включаем генерацию GraphQL схемы
-		entgql.WithWhereInputs(true), // если нужны фильтры
+		entgql.WithSchemaGenerator(), // enable GraphQL schema generate
+		entgql.WithWhereInputs(true), // with filters
 	)
 	if !errors.Is(err, nil) {
 		log.Fatalf("Error: failed creating entgql extension: %v", err)
