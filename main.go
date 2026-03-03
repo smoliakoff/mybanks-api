@@ -5,11 +5,13 @@ import (
 	"context"
 	"entgo.io/ent/dialect/sql"
 	"fmt"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/vektah/gqlparser/v2/formatter"
 	"log"
 	"mybanks-api/ent"
 	"mybanks-api/graph"
+	"mybanks-api/internal/config"
 	"net/http"
 	"os"
 
@@ -40,10 +42,11 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	_ = godotenv.Load(".env")
+	cfg := config.Load()
+	//dsn := "postgres://app:app@localhost:5432/postgres?sslmode=disable"
 
-	dsn := "postgres://postgres:@localhost:5432/postgres?sslmode=disable"
-
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("failed connecting to postgres: %v", err)
 	}
