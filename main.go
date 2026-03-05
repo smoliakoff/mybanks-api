@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"entgo.io/ent/dialect/sql"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -62,9 +61,6 @@ func main() {
 	}(db)
 
 	client := ent.NewClient(ent.Driver(db))
-	if err := client.Schema.Create(context.Background()); err != nil {
-		log.Fatalf("failed creating schema: %v", err)
-	}
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"time"
 )
 
 type CurrencyRate struct {
@@ -22,6 +23,11 @@ func (CurrencyRate) Fields() []ent.Field {
 		field.Float("sell").
 			Optional().
 			Nillable(),
+		field.Time("created_at").
+			Default(func() time.Time {
+				return time.Now().UTC()
+			}).
+			Immutable(),
 	}
 
 }

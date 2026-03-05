@@ -422,6 +422,11 @@ Run locally with:
 docker-compose up --build
 ```
 
+Build with BUILD_SHA tag
+```bash
+ BUILD_SHA=$(git rev-parse --short HEAD) docker compose up -d --build --force-recreate api
+```
+
 
 ## 📜 License
 
