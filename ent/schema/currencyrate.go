@@ -16,7 +16,12 @@ func (CurrencyRate) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("currency").
 			Comment("ISO 4217 currency code"),
-		field.Float("rate"),
+		field.Float("buy").
+			Optional().
+			Nillable(),
+		field.Float("sell").
+			Optional().
+			Nillable(),
 	}
 
 }
