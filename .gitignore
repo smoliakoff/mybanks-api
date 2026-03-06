@@ -3,7 +3,7 @@
 .idea/
 .env
 /graph/generated.go
-/graph/schema.graphqls
+/api/schema.graphqls
 /ent/bank/bank.go
 /ent/bank/where.go
 /ent/banktranslation/banktranslation.go
@@ -50,3 +50,5 @@
 /ent/offer_update.go
 /ent/runtime.go
 /ent/tx.go
+/graph/ent.graphqls
+/ent/internal/globalid.go

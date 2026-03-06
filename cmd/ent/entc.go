@@ -11,14 +11,18 @@ import (
 
 func main() {
 	ex, err := entgql.NewExtension(
-		entgql.WithSchemaPath("../graph/schema.graphqls"),
+		entgql.WithSchemaPath("../graph/ent.graphqls"),
 		entgql.WithSchemaGenerator(), // enable GraphQL schema generate
 		entgql.WithWhereInputs(true), // with filters
 	)
 	if !errors.Is(err, nil) {
 		log.Fatalf("Error: failed creating entgql extension: %v", err)
 	}
-	if err := entc.Generate("./schema", &gen.Config{}, entc.Extensions(ex)); !errors.Is(err, nil) {
+	if err := entc.Generate("./schema", &gen.Config{
+		Features: []gen.Feature{
+			gen.FeatureGlobalID,
+		},
+	}, entc.Extensions(ex)); !errors.Is(err, nil) {
 		log.Fatalf("Error: failed running ent codegen: %v", err)
 	}
 }
