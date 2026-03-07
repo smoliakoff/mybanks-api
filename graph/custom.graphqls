@@ -1,3 +1,19 @@
 extend type Bank {
     translation(locale: String!): BankTranslation
 }
+
+input ImportCurrencyRateInput {
+    base: String!
+    currency: String!
+    buy: Float
+    sell: Float
+    createdAt: Time
+}
+
+extend type Mutation {
+    importCurrencyRates(
+        bankID: ID!
+        rates: [ImportCurrencyRateInput!]!
+        replaceExisting: Boolean = true
+    ): [CurrencyRate!]!
+}
