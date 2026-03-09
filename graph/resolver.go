@@ -2,6 +2,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"mybanks-api/ent"
 	"mybanks-api/ent/bank"
 	"mybanks-api/ent/banktranslation"
@@ -25,6 +26,9 @@ func (r *Resolver) ImportCurrencyRates(
 	rates []*model.ImportCurrencyRateInput,
 	replaceExisting *bool,
 ) ([]*ent.CurrencyRate, error) {
+	if !IsInternalRequest(ctx) {
+		return nil, fmt.Errorf("forbidden")
+	}
 	tx, err := r.Client.Tx(ctx)
 	if err != nil {
 		return nil, err
