@@ -5,5 +5,4 @@ WORKDIR /app
 COPY migrations ./migrations
 COPY atlas.hcl ./atlas.hcl
 
-ENTRYPOINT ["atlas"]
 CMD ["migrate", "apply", "--env", "production"]
