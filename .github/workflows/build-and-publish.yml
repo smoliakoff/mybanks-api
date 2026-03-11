@@ -1,0 +1,54 @@
+name: Build and publish API images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: [self-hosted, macOS, x64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set lowercase owner
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
+      - name: Set short sha
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push runtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/mybanks-api:latest
+            ghcr.io/${{ env.OWNER_LC }}/mybanks-api:${{ env.SHORT_SHA }}
+
+      - name: Build and push migrate image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.migrate
+          push: true
+          tags: |
+            ghcr.io/${{ env.OWNER_LC }}/mybanks-api-migrate:latest
+            ghcr.io/${{ env.OWNER_LC }}/mybanks-api-migrate:${{ env.SHORT_SHA }}
