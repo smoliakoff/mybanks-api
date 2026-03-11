@@ -5,6 +5,8 @@ RUN echo "BUILD_SHA during docker build: $BUILD_SHA"
 
 WORKDIR /app
 
+RUN apk add --no-cache make git bash
+
 COPY go.mod go.sum ./
 RUN go mod download
 
