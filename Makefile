@@ -1,4 +1,4 @@
-SCHEMA_URL ?= http://localhost:8080/schema.graphql
+ч>SCHEMA_URL ?= http://localhost:8080/schema.graphql
 SCHEMA_OUT ?= ./graph/schema.graphqls
 ENV = set -a && . ./.env && set +a
 

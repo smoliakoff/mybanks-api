@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 env:
+  BUILDKIT_PROGRESS: plain
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 permissions:
@@ -42,6 +43,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          build-args: |
+            BUILD_SHA=${{ github.sha }}
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/mybanks-api:latest
             ghcr.io/${{ env.OWNER_LC }}/mybanks-api:${{ env.SHORT_SHA }}
@@ -52,6 +55,8 @@ jobs:
           context: .
           file: ./Dockerfile.migrate
           push: true
+          build-args: |
+            BUILD_SHA=${{ github.sha }}
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/mybanks-api-migrate:latest
             ghcr.io/${{ env.OWNER_LC }}/mybanks-api-migrate:${{ env.SHORT_SHA }}
