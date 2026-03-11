@@ -52,3 +52,4 @@
 /ent/tx.go
 /graph/ent.graphqls
 /ent/internal/globalid.go
+/graph/model/models_gen.go
